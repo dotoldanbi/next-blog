@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 
 export async function POST(req) {
   try {
-    const evt = await verifyWebhook(req, process.env.CLERK_WEBHOOK_SECRET);
+    const evt = await verifyWebhook(req);
 
     // Do something with payload
     // For this guide, log payload to console
