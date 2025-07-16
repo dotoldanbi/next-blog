@@ -41,22 +41,21 @@ export async function POST(req) {
             console.log("Error updating user metadata:", error);
           }
         }
+
+        if (user && eventType === "user.deleted") {
+          const { id } = evt?.data;
+          try {
+            await deleteUser(id);
+          } catch (error) {
+            console.log("Error deleting user :", error);
+            return new Response("Error Occured", { status: 400 });
+          }
+        }
       } catch (error) {
         console.log("Error creating or updating user:", error);
         return new Response("Error occured", { status: 400 });
       }
     }
-
-    if (user && eventType === "user.deleted") {
-      const { id } = evt?.data;
-      try {
-        await deleteUser(id);
-      } catch (error) {
-        console.log("Error deleting user :", error);
-        return new Response("Error Occured", { status: 400 });
-      }
-    }
-
     return new Response("Webhook received", { status: 200 });
   } catch (err) {
     console.error("Error verifying webhook:", err);
