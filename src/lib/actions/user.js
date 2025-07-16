@@ -25,6 +25,7 @@ export const createOrUpdateUser = async (
       },
       { new: true, upsert: true }
     );
+    console.log("Success creating or updating user:");
     return user;
   } catch (error) {
     console.log("Error creating or updating user:", error);
