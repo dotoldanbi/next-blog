@@ -1,0 +1,21 @@
+import mongoose from "mongoose";
+
+const initialized = false;
+
+const connect = async () => {
+  mongoose.set("strictQuery", true);
+  if (initialized) {
+    console.log("Already connected to MongoDB");
+    return;
+  }
+
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      dbName: "next-blog",
+    });
+    console.log("Connected to MongoDB");
+    initialized = true;
+  } catch (error) {
+    console.log("Error connecting to MongoDB: ", error);
+  }
+};

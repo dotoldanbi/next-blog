@@ -1,3 +1,4 @@
+import { deleteUser } from "@/lib/actions/user";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
 
@@ -14,11 +15,46 @@ export async function POST(req) {
     );
     console.log("Webhook payload:", evt.data);
 
-    if (eventType === "user.created") {
-      console.log("userId created : ", evt.data.id);
+    if (eventType === "user.created" || eventType === "user.updated") {
+      const { id, first_name, last_name, image_url, email_address, username } =
+        evt?.data;
+
+      try {
+        const user = await createOrUpdateUser(
+          id,
+          first_name,
+          last_name,
+          image_url,
+          email_address,
+          username
+        );
+
+        if (user && eventType === "user.created") {
+          try {
+            await clerkClient.users.updateUserMetadata(id, {
+              publicMetadata: {
+                userMongoId: user._id,
+                isAdmin: user.isAdmin,
+              },
+            });
+          } catch (error) {
+            console.log("Error updating user metadata:", error);
+          }
+        }
+      } catch (error) {
+        console.log("Error creating or updating user:", error);
+        return new Response("Error occured", { status: 400 });
+      }
     }
-    if (eventType === "user.updated") {
-      console.log("userId updated : ", evt.data.id);
+
+    if (user && eventType === "user.deleted") {
+      const { id } = evt?.data;
+      try {
+        await deleteUser(id);
+      } catch (error) {
+        console.log("Error deleting user :", error);
+        return new Response("Rttot Occured", { status: 400 });
+      }
     }
 
     return new Response("Webhook received", { status: 200 });
