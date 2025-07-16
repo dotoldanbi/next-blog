@@ -53,7 +53,7 @@ export async function POST(req) {
         await deleteUser(id);
       } catch (error) {
         console.log("Error deleting user :", error);
-        return new Response("Rttot Occured", { status: 400 });
+        return new Response("Error Occured", { status: 400 });
       }
     }
 
