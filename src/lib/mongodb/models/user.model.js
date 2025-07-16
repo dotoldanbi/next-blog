@@ -10,9 +10,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
-
     firstName: {
       type: String,
       required: true,
@@ -24,19 +22,21 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
     },
     profilePicture: {
       type: String,
       required: false,
     },
     isAdmin: {
-      type: boolean,
+      type: Boolean,
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
+
 export default User;
