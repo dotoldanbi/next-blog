@@ -15,47 +15,6 @@ export async function POST(req) {
     );
     console.log("Webhook payload:", evt?.data);
 
-    if (eventType === "user.created" || eventType === "user.updated") {
-      const { id, first_name, last_name, image_url, email_address, username } =
-        evt?.data;
-
-      try {
-        const user = await createOrUpdateUser(
-          id,
-          first_name,
-          last_name,
-          image_url,
-          email_address,
-          username
-        );
-
-        if (user && eventType === "user.created") {
-          try {
-            await clerkClient.users.updateUserMetadata(id, {
-              publicMetadata: {
-                userMongoId: user._id,
-                isAdmin: user.isAdmin,
-              },
-            });
-          } catch (error) {
-            console.log("Error updating user metadata:", error);
-          }
-        }
-
-        if (user && eventType === "user.deleted") {
-          const { id } = evt?.data;
-          try {
-            await deleteUser(id);
-          } catch (error) {
-            console.log("Error deleting user :", error);
-            return new Response("Error Occured", { status: 400 });
-          }
-        }
-      } catch (error) {
-        console.log("Error creating or updating user:", error);
-        return new Response("Error occured", { status: 400 });
-      }
-    }
     return new Response("Webhook received", { status: 200 });
   } catch (err) {
     console.error("Error verifying webhook:", err);
