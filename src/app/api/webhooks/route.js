@@ -1,6 +1,7 @@
 import { createOrUpdateUser, deleteUser } from "@/lib/actions/user";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function POST(req) {
   try {
@@ -46,7 +47,7 @@ export async function POST(req) {
         return new Response("Error occured", { status: 400 });
       }
     }
-    if (user && eventType === "user.deleted") {
+    if (eventType === "user.deleted") {
       const { id } = evt?.data;
       try {
         await deleteUser(id);
